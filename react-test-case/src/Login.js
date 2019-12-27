@@ -19,7 +19,9 @@ export const Login = (props) => {
             type="text"
             value={props.currentLogin}
             onChange={props.handleLogin}
+            pattern="[A-Za-z]{3,}"
             placeholder="Enter your login"
+            required
             autoFocus
           />
           <input
@@ -27,8 +29,9 @@ export const Login = (props) => {
             value={props.currentPassword}
             onChange={e => props.handlePassword(e)}
             placeholder="Enter your password"
+            required
           />
-          <button onSubmit={props.loginRequest}>Login</button>
+          <button type="submit" onSubmit={props.loginRequest}>Login</button>
         </form>
 
       </div>

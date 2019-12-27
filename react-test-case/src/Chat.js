@@ -19,7 +19,6 @@ export const Chat = props => {
   const [users, setOnlineUsers] = useState([])
   const [socket, setSocket] = useState(null)
   const [message, setMessage] = useState("")
-
   const [messages, dispatchMessages] = useReducer(messageReducer, [])
 
   useEffect(() => {
@@ -48,7 +47,15 @@ export const Chat = props => {
     })
 
     socket.on("sendAllUsers", users => {
-      setOnlineUsers(users)
+      let usersToDisplay = {}
+
+      for (let i in users) {
+        const color = setRandomColor()
+        if (!usersToDisplay[i]) {
+          usersToDisplay[i] = { ...users[i], color }
+        }
+      }
+      setOnlineUsers(usersToDisplay)
     })
 
     setSocket(socket)
@@ -77,29 +84,44 @@ export const Chat = props => {
     socket.emit("banUser", user)
   }
 
+  const unbanUser = user => {
+    socket.emit("unbanUser", user)
+  }
+
+  const setRandomColor = () => {
+    let color = "#"
+    let letters = "0123456789ABCDEF"
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)]
+    }
+    return color
+  }
+
   const showUsers = () =>
-    Object.keys(users).map(key => {
-      const user = users[key]
-      return (
-        <li key={user._id}>
-          {user.login}
-          {props.currentUser.isAdmin && !user.isAdmin && (
-            <div>
-              <button onClick={() => banUser(user)}>Ban</button>
-              {!user.isMuted ? (
-                <button onClick={() => muteUser(user)}>
-                  Mute}
+    Object.keys(users)
+      .filter(key => users[key].online)
+      .map(key => {
+        const user = users[key]
+        return (
+          <li key={user._id} style={{ color: user.color }}>
+            {user.login}{console.log(user)}
+            {props.currentUser.isAdmin && !user.isAdmin && (
+              <div>
+                <button onClick={() => banUser(user)}>Ban</button>
+                {!user.isMuted ? (
+                  <button onClick={() => muteUser(user)}>
+                    Mute
                 </button>
-              ) : (
-                <button onClick={() => unmuteUser(user)}>
-                  Unmute}
+                ) : (
+                    <button onClick={() => unmuteUser(user)}>
+                      Unmute
                 </button>
-              )}
-            </div>
-          )}
-        </li>
-      )
-    })
+                  )}
+              </div>
+            )}
+          </li>
+        )
+      })
 
   return (
     <div>
@@ -117,14 +139,54 @@ export const Chat = props => {
       <ul>
         {messages.map(msg => {
           return (
-            <li key={msg._id}>
-              {msg.userName}: {msg.text}
+            <li key={msg._id} >
+              <div>
+                {users[msg.userId] ? <p style={{ color: users[msg.userId].color }}>{msg.userName}:</p> : <p>{msg.userName}:</p>}
+              </div> {msg.text}
             </li>
           )
         })}
       </ul>
       <h2>Online</h2>
       <ul>{showUsers()}</ul>
+      <div>
+        <ul>
+          {Object.keys(users)
+            .filter(key => !users[key].online)
+            .map(key => {
+              const user = users[key]
+              if (props.currentUser.isAdmin && !user.isAdmin) {
+                return (
+                  <div>
+                    <li key={user._id}>
+                      {user.login}
+                      <div>
+                      {!user.isBanned ? (
+                          <button onClick={() => banUser(user)}>
+                            Ban
+                </button>
+                        ) : (
+                            <button onClick={() => unbanUser(user)}>
+                              Unban
+                </button>
+                          )}
+                        {!user.isMuted ? (
+                          <button onClick={() => muteUser(user)}>
+                            Mute
+                </button>
+                        ) : (
+                            <button onClick={() => unmuteUser(user)}>
+                              Unmute
+                </button>
+                          )}
+                      </div>
+                    </li>
+                  </div>
+                )
+              }
+            })}
+        </ul>
+      </div>
     </div>
   )
 }

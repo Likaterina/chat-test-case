@@ -14,7 +14,8 @@ import {
 } from "react-router-dom"
 import axios from "axios"
 import { decode } from "jsonwebtoken"
-import "./App.css"
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 export default function App() {
   const [user, setUser] = useState(undefined)
@@ -32,11 +33,9 @@ export default function App() {
 
   useEffect(() => {
     getAndSetUser()
-    console.log(user)
   }, [])
 
   const loginRequest = e => {
-    console.log(HOST)
     e.preventDefault()
     axios
       .post(`${HOST}/auth/login`, {
@@ -53,7 +52,6 @@ export default function App() {
   }
 
   const logout = () => {
-    console.log(user)
     console.log("logout")
     tokenService.removeToken()
     setUser(undefined)

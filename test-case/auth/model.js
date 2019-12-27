@@ -21,6 +21,9 @@ const User = db.model(
     isBanned: {
       type: Boolean,
       default: false
+    }, 
+    isOnline: {
+      type: Boolean
     }
   })
 )
