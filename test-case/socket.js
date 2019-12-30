@@ -37,7 +37,7 @@ const socket = io => {
     users[user._id] = user
     sockets[user._id] = socket
 
-    if (users[user._id] == undefined) {
+    if (users[user._id] === undefined) {
       users[user._id] = { ...user, online: true }
     } else {
       users[user._id].online = true
@@ -50,12 +50,18 @@ const socket = io => {
     socket.broadcast.emit("sendAllUsers", users)
     socket.emit("sendAllUsers", users)
 
+    let lastMessage = 0
+
     socket.on("message", async msg => {
+      if(Date.now() - lastMessage <= 15000) {
+        return 
+      } else {
+        lastMessage = Date.now()
+      }
       let user = await User.findOne({
         _id: userFromToken._id
       })
-      if (msg.text.length > 200 ) return
-      if (user.isMuted) return
+      if (msg.text.length > 200 || user.isMuted) return
       const message = new Message({
         userId: user._id,
         text: msg.text,
@@ -100,7 +106,6 @@ const socket = io => {
         await userToBan.save()
         users[thisUser._id] = userToBan
         socket.emit("sendAllUsers", users)
-        sockets[thisUser._id].disconnect()
       })
 
       socket.on("unbanUser", async thisUser => {
@@ -113,7 +118,6 @@ const socket = io => {
         users[thisUser._id] = userToUnban
         socket.broadcast.emit("sendAllUsers", users)
         socket.emit("sendAllUsers", users)        
-        sockets[thisUser._id].connect()
       })
     }
 

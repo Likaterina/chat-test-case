@@ -49,12 +49,15 @@ export const Chat = props => {
     socket.on("sendAllUsers", users => {
       let usersToDisplay = {}
 
+      console.log(users)
+
       for (let i in users) {
         const color = setRandomColor()
         if (!usersToDisplay[i]) {
           usersToDisplay[i] = { ...users[i], color }
         }
       }
+      console.log(usersToDisplay)
       setOnlineUsers(usersToDisplay)
     })
 
@@ -89,12 +92,8 @@ export const Chat = props => {
   }
 
   const setRandomColor = () => {
-    let color = "#"
-    let letters = "0123456789ABCDEF"
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)]
-    }
-    return color
+    const rand256 = () => Math.floor(Math.random() * 256)
+    return `rgb(${rand256()}, ${rand256()}, ${rand256()})`
   }
 
   const showUsers = () =>

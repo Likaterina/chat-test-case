@@ -2,6 +2,9 @@
     "name": "socket-chat-example",
     "version": "0.0.1",
     "description": "my first socket.io app",
+    "scripts": {
+      "start": "nodemon index.js"
+    },
     "dependencies": {
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.19.0",
