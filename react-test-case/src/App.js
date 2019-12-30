@@ -68,7 +68,7 @@ export default function App() {
 
   return (
     <div>
-      <ul>
+      <ul style={{display: "none"}}>
         <li>
           <Link to="/login">Login</Link>
         </li>

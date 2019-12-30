@@ -58,9 +58,10 @@ const socket = io => {
       } else {
         lastMessage = Date.now()
       }
-      let user = await User.findOne({
-        _id: userFromToken._id
-      })
+      // let user = await User.findOne({
+      //   _id: userFromToken._id
+      // })
+      console.log(user)
       if (msg.text.length > 200 || user.isMuted) return
       const message = new Message({
         userId: user._id,
