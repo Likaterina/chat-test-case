@@ -29,7 +29,7 @@ const socket = io => {
       socket.logout()
       socket.disconnect()
       return
-    } 
+    }
 
     user = user.toObject()
     socket.userId = user._id
@@ -47,20 +47,32 @@ const socket = io => {
 
     socket.emit("allMessages", allMessages)
 
-    socket.broadcast.emit("sendAllUsers", users)
-    socket.emit("sendAllUsers", users)
+    let onlineUsers = {}
+    for (let i in users) {
+      if (users[i].online) {
+        onlineUsers = users[i]
+
+        console.log("onlineUsers", onlineUsers)
+      }
+      return onlineUsers
+
+    }
+
+    console.log(users)
+    socket.broadcast.emit("sendAllUsers", onlineUsers)
+    socket.emit("sendAllUsers", onlineUsers)
 
     let lastMessage = 0
 
     socket.on("message", async msg => {
-      if(Date.now() - lastMessage <= 15000) {
-        return 
+      if (Date.now() - lastMessage <= 5000) {
+        return
       } else {
         lastMessage = Date.now()
       }
-      // let user = await User.findOne({
-      //   _id: userFromToken._id
-      // })
+      let user = await User.findOne({
+        _id: userFromToken._id
+      })
       console.log(user)
       if (msg.text.length > 200 || user.isMuted) return
       const message = new Message({
@@ -74,6 +86,8 @@ const socket = io => {
     })
 
     if (user.isAdmin) {
+      socket.broadcast.emit("sendAllUsers", users)
+      socket.emit("sendAllUsers", users)
       socket.on("muteUser", async thisUser => {
         const mutedUser = await User.findOne({
           _id: thisUser._id
@@ -118,7 +132,7 @@ const socket = io => {
         await userToUnban.save()
         users[thisUser._id] = userToUnban
         socket.broadcast.emit("sendAllUsers", users)
-        socket.emit("sendAllUsers", users)        
+        socket.emit("sendAllUsers", users)
       })
     }
 

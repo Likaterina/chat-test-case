@@ -40,11 +40,12 @@ const useStyles = makeStyles(theme => ({
     borderColor: "#ccc",
     borderRightStyle: "solid",
     borderLeftStyle: "solid",
+    
   },
   container: {
     height: "100vh",
   },
-  marin: {
+  margin: {
     margin: theme.spacing(1),
     flexWrap: 'wrap',
   },
@@ -63,7 +64,7 @@ const useStyles = makeStyles(theme => ({
     color: "black",
   },
   users: {
-    margin: theme.spacing(1, 3),
+    margin: theme.spacing(1, 0),
     font: 'Open Sans',
     borderWidth: "1px",
     borderStyle: "solid",
@@ -72,7 +73,8 @@ const useStyles = makeStyles(theme => ({
     
   }, 
   height: {
-    height: "100%"
+    height: "100%",
+    overflowY: "auto",
   }
 }))
 
@@ -187,8 +189,7 @@ export const Chat = props => {
 
   return (
     <Grid container spacing={3} direction="row" className={classes.container} >
-      <Grid
-        
+      <Grid     
         item xs={4}
         container
         direction="column"
@@ -212,6 +213,7 @@ export const Chat = props => {
           direction="column"
           justify="flex-start"
           alignItems="stretch" 
+          className={classes.height}
           >
             
           <ul style={{ listStyle: "none" }} >
