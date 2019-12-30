@@ -40,6 +40,7 @@ const useStyles = makeStyles(theme => ({
     borderColor: "#ccc",
     borderRightStyle: "solid",
     borderLeftStyle: "solid",
+    height: "100%",
     
   },
   container: {
@@ -53,7 +54,7 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1),
   },
   message: {
-    margin: theme.spacing(2, 0),
+    margin: theme.spacing(1, 0, 3),
     borderWidth: "1px",
     borderStyle: "solid",
     borderColor: "#97C6E3",
@@ -73,8 +74,11 @@ const useStyles = makeStyles(theme => ({
     
   }, 
   height: {
-    height: "100%",
+    height: "85%",
     overflowY: "auto",
+  },
+  input: {
+    padding: theme.spacing(1,1, 0),
   }
 }))
 
@@ -95,6 +99,10 @@ export const Chat = props => {
       query: {
         token
       }
+    })
+
+    socket.on('disconnect', () => {
+      props.logout();
     })
 
     socket.on("allMessages", payload => {
@@ -145,7 +153,7 @@ export const Chat = props => {
   }
 
   const unmuteUser = user => {
-    socket.emit("unmuteUser", user)
+    socket.emit("unmuteUser", user)                                                                                                                                                                                                             
   }
 
   const banUser = user => {
@@ -207,7 +215,9 @@ export const Chat = props => {
         direction="column"
         justify="flex-end"
         alignItems="center"
+        
         className={classes.chat}>
+        
         <Grid
           container
           direction="column"
@@ -237,7 +247,7 @@ export const Chat = props => {
           direction="row"
           justify="flex-end"
           alignItems="flex-end">
-          <Input value={message} onChange={handleMessage} id="standard-basic" fullWidth placeholder="Enter your message" />
+          <Input className={classes.input} value={message} onChange={handleMessage} id="standard-basic" fullWidth placeholder="Enter your message" />
           <Button
             onClick={sendMessage}
             color="primary">

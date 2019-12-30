@@ -47,25 +47,14 @@ const socket = io => {
 
     socket.emit("allMessages", allMessages)
 
-    let onlineUsers = {}
-    for (let i in users) {
-      if (users[i].online) {
-        onlineUsers = users[i]
-
-        console.log("onlineUsers", onlineUsers)
-      }
-      return onlineUsers
-
-    }
-
-    console.log(users)
-    socket.broadcast.emit("sendAllUsers", onlineUsers)
-    socket.emit("sendAllUsers", onlineUsers)
+    
+    socket.broadcast.emit("sendAllUsers", users)
+    socket.emit("sendAllUsers", users)
 
     let lastMessage = 0
 
     socket.on("message", async msg => {
-      if (Date.now() - lastMessage <= 5000) {
+      if (Date.now() - lastMessage <= 1000) {
         return
       } else {
         lastMessage = Date.now()
@@ -86,6 +75,10 @@ const socket = io => {
     })
 
     if (user.isAdmin) {
+      let allUser = await User.findOne({
+        _id: userFromToken._id
+      })
+
       socket.broadcast.emit("sendAllUsers", users)
       socket.emit("sendAllUsers", users)
       socket.on("muteUser", async thisUser => {
@@ -120,6 +113,7 @@ const socket = io => {
         userToBan.isBanned = true
         await userToBan.save()
         users[thisUser._id] = userToBan
+        sockets[userToBan._id].disconnect();
         socket.emit("sendAllUsers", users)
       })
 
